@@ -1,10 +1,8 @@
 import express from "express";
 
-// --- CHANGE THIS SECTION ---
-// Old causing error: import { eventBus } from "../../../event-bus/index.js";
-import eventBusPkg from "../../../event-bus/index.js";
-const { eventBus } = eventBusPkg;
-// ---------------------------
+// --- REVERTED TO NAMED IMPORT ---
+import { eventBus } from "../../../event-bus/index.js";
+// --------------------------------
 
 import { ORDER_CREATED } from "../../../contracts/events/order-events.js";
 

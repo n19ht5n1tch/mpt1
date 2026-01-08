@@ -1,7 +1,7 @@
 import express from "express";
 import crypto from "crypto";
-import { eventBus } from "../../event-bus/index.js";
-import { ORDER_CREATED } from "../../contracts/events/order-events.js";
+import { eventBus } from "../../../event-bus/index.js";
+import { ORDER_CREATED } from "../../../contracts/events/order-events.js";
 
 const app = express();
 app.use(express.json());
