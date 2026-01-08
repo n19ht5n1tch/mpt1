@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # -----------------------------------------------------------
+  # INFRASTRUCTURE (The "Plumbing")
+  # -----------------------------------------------------------
+  
+  # 1. Redis (The Event Bus)
+  # Replaces your local event-bus file. All services will pub/sub here.
+  redis:
+    image: redis:alpine
+    container_name: mpt_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - mpt_network
+
+  # 2. ClickHouse (The Analytics Brain)
+  # High-performance DB for your Rust worker to dump data into.
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    container_name: mpt_clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - mpt_network
+
+  # -----------------------------------------------------------
+  # MICROSERVICES
+  # -----------------------------------------------------------
+
+  # 3. User Service (Running on BUN)
+  # We are switching this from Node to Bun for speed.
+  user-service:
+    build: 
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    container_name: mpt_user_service
+    ports:
+      - "3001:3001"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - PORT=3001
+    depends_on:
+      - redis
+    networks:
+      - mpt_network
+
+networks:
+  mpt_network:
+    driver: bridge
